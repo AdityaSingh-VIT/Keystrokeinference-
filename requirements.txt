@@ -1,0 +1,14 @@
+flask==2.3.3
+flask-sqlalchemy==3.1.1
+gunicorn==23.0.0
+email-validator==2.1.0
+numpy==1.26.0
+psycopg2-binary==2.9.9
+scipy==1.11.3
+sqlalchemy==2.0.23
+werkzeug==2.3.7
+openpyxl
+pandas
+xlsxwriter
+flask-login
+flask-wtf
