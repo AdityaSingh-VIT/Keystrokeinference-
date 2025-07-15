@@ -1,0 +1,560 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="page-transition">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section" style="background-color: var(--subtle-purple);">
+                <h1 class="section-header">Admin Dashboard</h1>
+                <p>Manage users, faculty access and system settings.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Faculty Access Management -->
+        <div class="col-md-12 mb-4">
+            <div class="section animate__animated animate__fadeInUp">
+                <h2 class="section-header">
+                    <i class="fas fa-user-shield me-2"></i>
+                    Faculty Access Management
+                </h2>
+                
+                <div class="mb-4 alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Faculty members with edit access can train models, modify system settings, and access all data.
+                </div>
+                
+                <!-- Current Faculty List -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Current Faculty Members</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="facultyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Department</th>
+                                        <th>Access Level</th>
+                                        <th>Last Login</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Dr. Jane Smith</td>
+                                        <td>jsmith@example.edu</td>
+                                        <td>Computer Science</td>
+                                        <td><span class="badge bg-success">Full Access</span></td>
+                                        <td>2025-04-08 14:32</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-outline-danger" title="Revoke Access"><i class="fas fa-user-slash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Prof. Robert Johnson</td>
+                                        <td>rjohnson@example.edu</td>
+                                        <td>Electrical Engineering</td>
+                                        <td><span class="badge bg-warning text-dark">Limited Access</span></td>
+                                        <td>2025-04-05 09:15</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-outline-danger" title="Revoke Access"><i class="fas fa-user-slash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dr. Michael Chen</td>
+                                        <td>mchen@example.edu</td>
+                                        <td>Information Security</td>
+                                        <td><span class="badge bg-success">Full Access</span></td>
+                                        <td>2025-04-07 16:45</td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" title="Edit"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-outline-danger" title="Revoke Access"><i class="fas fa-user-slash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add New Faculty Member -->
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Add New Faculty Member</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="addFacultyForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="facultyName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="facultyName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="facultyEmail" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="facultyEmail" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="facultyDepartment" class="form-label">Department</label>
+                                    <select class="form-select" id="facultyDepartment" required>
+                                        <option value="" selected disabled>Select Department</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Electrical Engineering">Electrical Engineering</option>
+                                        <option value="Information Security">Information Security</option>
+                                        <option value="Data Science">Data Science</option>
+                                        <option value="Cybersecurity">Cybersecurity</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="accessLevel" class="form-label">Access Level</label>
+                                    <select class="form-select" id="accessLevel" required>
+                                        <option value="" selected disabled>Select Access Level</option>
+                                        <option value="full">Full Access</option>
+                                        <option value="limited">Limited Access</option>
+                                        <option value="view">View Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="permissions" class="form-label">Permissions</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="trainModels">
+                                            <label class="form-check-label" for="trainModels">Train Models</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="viewData">
+                                            <label class="form-check-label" for="viewData">View Data</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="exportData">
+                                            <label class="form-check-label" for="exportData">Export Data</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="addUsers">
+                                            <label class="form-check-label" for="addUsers">Add Users</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="systemSettings">
+                                            <label class="form-check-label" for="systemSettings">System Settings</label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="deleteData">
+                                            <label class="form-check-label" for="deleteData">Delete Data</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <textarea class="form-control" id="notes" rows="3"></textarea>
+                            </div>
+                            <div class="text-end">
+                                <button type="reset" class="btn btn-secondary me-2">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Add Faculty Member
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <!-- System Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="section animate__animated animate__fadeInLeft">
+                <h2 class="section-header">
+                    <i class="fas fa-cogs me-2"></i>
+                    System Settings
+                </h2>
+                <form id="systemSettingsForm">
+                    <div class="mb-3">
+                        <label for="modelPath" class="form-label">Model Storage Path</label>
+                        <input type="text" class="form-control" id="modelPath" value="/models" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="maxUploadSize" class="form-label">Maximum Upload Size (MB)</label>
+                        <input type="number" class="form-control" id="maxUploadSize" value="50" min="1" max="500" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sessionTimeout" class="form-label">Session Timeout (minutes)</label>
+                        <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="120" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">System Features</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="enableRecording" checked>
+                            <label class="form-check-label" for="enableRecording">Enable Audio Recording</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="enableFeedback" checked>
+                            <label class="form-check-label" for="enableFeedback">Enable User Feedback</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="enableExport" checked>
+                            <label class="form-check-label" for="enableExport">Enable Data Export</label>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- System Statistics -->
+        <div class="col-md-6 mb-4">
+            <div class="section animate__animated animate__fadeInRight">
+                <h2 class="section-header">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    System Statistics
+                </h2>
+                <div class="row text-center">
+                    <div class="col-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Total Uploads</h5>
+                                <h3 class="text-primary">183</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Active Users</h5>
+                                <h3 class="text-success">27</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Training Samples</h5>
+                                <h3 class="text-info">512</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Avg. Accuracy</h5>
+                                <h3 class="text-warning">76%</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3 bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title">System Health</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                Database Connection
+                                <span class="badge bg-success rounded-pill">OK</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                Disk Space
+                                <span class="badge bg-success rounded-pill">78% Free</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                Memory Usage
+                                <span class="badge bg-warning rounded-pill">62%</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent">
+                                Model Status
+                                <span class="badge bg-success rounded-pill">Trained</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="text-end mt-3">
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="fas fa-download me-2"></i>Export Statistics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Data Section -->
+    <div class="row mt-3">
+        <div class="col-12 mb-4">
+            <div class="section animate__animated animate__fadeInUp">
+                <h2 class="section-header">
+                    <i class="fas fa-file-export me-2"></i>
+                    Export Data
+                </h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">Training Data</div>
+                            <div class="card-body">
+                                <p>Export all training data and model configurations.</p>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-excel me-2"></i>Excel
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-csv me-2"></i>CSV
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-code me-2"></i>JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">User Feedback</div>
+                            <div class="card-body">
+                                <p>Export user feedback and accuracy ratings.</p>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-excel me-2"></i>Excel
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-csv me-2"></i>CSV
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-code me-2"></i>JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Faculty Edit Modal -->
+<div class="modal fade" id="editFacultyModal" tabindex="-1" aria-labelledby="editFacultyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFacultyModalLabel">Edit Faculty Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFacultyForm">
+                    <input type="hidden" id="editFacultyId">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="editName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editDepartment" class="form-label">Department</label>
+                            <select class="form-select" id="editDepartment" required>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Information Security">Information Security</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editAccessLevel" class="form-label">Access Level</label>
+                            <select class="form-select" id="editAccessLevel" required>
+                                <option value="full">Full Access</option>
+                                <option value="limited">Limited Access</option>
+                                <option value="view">View Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Permissions</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editTrainModels">
+                                    <label class="form-check-label" for="editTrainModels">Train Models</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editViewData">
+                                    <label class="form-check-label" for="editViewData">View Data</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editExportData">
+                                    <label class="form-check-label" for="editExportData">Export Data</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editAddUsers">
+                                    <label class="form-check-label" for="editAddUsers">Add Users</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editSystemSettings">
+                                    <label class="form-check-label" for="editSystemSettings">System Settings</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="editDeleteData">
+                                    <label class="form-check-label" for="editDeleteData">Delete Data</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveFacultyChanges">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Action Modal -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmActionTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmActionMessage">
+                Are you sure you want to proceed with this action?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmActionButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for the edit buttons
+    const editButtons = document.querySelectorAll('#facultyTable .btn-outline-primary');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // In a real app, you would fetch the faculty member's data here
+            // For demo purposes, we're just showing the modal with preset data
+            const modal = new bootstrap.Modal(document.getElementById('editFacultyModal'));
+            
+            // Set form values based on the selected faculty member
+            // In this case, we're just using dummy values
+            document.getElementById('editName').value = this.closest('tr').cells[0].textContent;
+            document.getElementById('editEmail').value = this.closest('tr').cells[1].textContent;
+            document.getElementById('editDepartment').value = this.closest('tr').cells[2].textContent;
+            
+            const accessLevel = this.closest('tr').cells[3].querySelector('.badge').textContent;
+            if (accessLevel === 'Full Access') {
+                document.getElementById('editAccessLevel').value = 'full';
+                // Set permissions
+                document.getElementById('editTrainModels').checked = true;
+                document.getElementById('editViewData').checked = true;
+                document.getElementById('editExportData').checked = true;
+                document.getElementById('editAddUsers').checked = true;
+                document.getElementById('editSystemSettings').checked = true;
+                document.getElementById('editDeleteData').checked = true;
+            } else {
+                document.getElementById('editAccessLevel').value = 'limited';
+                // Set limited permissions
+                document.getElementById('editTrainModels').checked = true;
+                document.getElementById('editViewData').checked = true;
+                document.getElementById('editExportData').checked = true;
+                document.getElementById('editAddUsers').checked = false;
+                document.getElementById('editSystemSettings').checked = false;
+                document.getElementById('editDeleteData').checked = false;
+            }
+            
+            modal.show();
+        });
+    });
+    
+    // Add event listeners for the delete buttons
+    const deleteButtons = document.querySelectorAll('#facultyTable .btn-outline-danger');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const facultyName = this.closest('tr').cells[0].textContent;
+            document.getElementById('confirmActionMessage').textContent = 
+                `Are you sure you want to revoke access for ${facultyName}?`;
+            document.getElementById('confirmActionTitle').textContent = 'Confirm Access Revocation';
+            
+            const modal = new bootstrap.Modal(document.getElementById('confirmActionModal'));
+            modal.show();
+        });
+    });
+    
+    // Handle form submissions
+    document.getElementById('addFacultyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // In a real app, you would save the data here
+        alert('Faculty member added successfully!');
+        this.reset();
+    });
+    
+    document.getElementById('systemSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        // In a real app, you would save the settings here
+        alert('System settings saved successfully!');
+    });
+    
+    // Handle save changes in edit modal
+    document.getElementById('saveFacultyChanges').addEventListener('click', function() {
+        // In a real app, you would save the changes here
+        alert('Faculty member updated successfully!');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editFacultyModal'));
+        modal.hide();
+    });
+    
+    // Handle confirmation in confirm action modal
+    document.getElementById('confirmActionButton').addEventListener('click', function() {
+        // In a real app, you would perform the action here
+        alert('Access revoked successfully!');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmActionModal'));
+        modal.hide();
+    });
+    
+    // Handle export buttons
+    const exportButtons = document.querySelectorAll('.btn-outline-primary');
+    exportButtons.forEach(button => {
+        if (button.innerHTML.includes('Excel') || button.innerHTML.includes('CSV') || button.innerHTML.includes('JSON')) {
+            button.addEventListener('click', function() {
+                // In a real app, you would generate and download the file here
+                const format = this.textContent.trim();
+                const type = this.closest('.card').querySelector('.card-header').textContent;
+                alert(`Exporting ${type} in ${format} format...`);
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

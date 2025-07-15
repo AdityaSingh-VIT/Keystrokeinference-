@@ -1,0 +1,200 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <!-- Analysis Progress Modal -->
+    <div class="modal fade" id="analysisProgressModal" tabindex="-1" aria-labelledby="analysisProgressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="analysisProgressModalLabel">Analysis Progress</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="progress mb-3">
+                        <div id="analysisProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    <p id="analysisProgressStatus">Initializing analysis...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="page-transition">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section" style="background-color: var(--subtle-blue);">
+                <h1 class="section-header">Audio Analysis</h1>
+                <p>Upload a recording of keyboard typing or record audio in real-time for acoustic analysis.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upload Section -->
+        <div class="col-md-6 mb-4">
+            <div class="section animate__animated animate__fadeInLeft">
+                <h2 class="section-header">
+                    <i class="fas fa-upload me-2"></i>
+                    Upload Recording
+                </h2>
+                <form id="uploadForm">
+                    <div class="mb-3">
+                        <label for="audioFile" class="form-label">Select audio file of keyboard typing</label>
+                        <input class="form-control" type="file" id="audioFile" name="file" accept=".wav,.mp3,.ogg,.m4a">
+                        <div class="form-text text-muted">
+                            Supported formats: WAV, MP3, OGG, M4A
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary animate__animated animate__pulse animate__repeat-2">
+                        <i class="fas fa-play me-2"></i>
+                        Analyze Recording
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Record Section -->
+        <div class="col-md-6 mb-4">
+            <div class="section animate__animated animate__fadeInRight">
+                <h2 class="section-header">
+                    <i class="fas fa-microphone me-2"></i>
+                    Record in Real-Time
+                </h2>
+                <p>Record keyboard typing in real-time for immediate analysis.</p>
+                <div class="text-center my-4">
+                    <button id="recordButton" class="btn btn-primary btn-lg animate__animated animate__pulse animate__repeat-2">
+                        <i class="fas fa-microphone me-2"></i>
+                        Start Recording
+                    </button>
+                </div>
+                <div class="alert alert-info small">
+                    <i class="fas fa-info-circle me-2"></i>
+                    For best results, place your microphone near the keyboard and type naturally.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="row mt-4 d-none">
+        <div class="col-12">
+            <div class="section animate__animated animate__fadeInUp" style="background-color: var(--subtle-teal);">
+                <h2 class="section-header">Analysis Results</h2>
+                
+                <div class="row">
+                    <!-- Spectrogram -->
+                    <div class="col-md-6 mb-4 reveal">
+                        <h3 class="h5">Spectrogram</h3>
+                        <div class="spectrogram-container">
+                            <canvas id="spectrogram" class="w-100"></canvas>
+                        </div>
+                        <div class="text-muted small mt-2">
+                            <i class="fas fa-info-circle me-1"></i>
+                            The spectrogram shows frequency patterns of your keystrokes over time
+                        </div>
+                    </div>
+                    
+                    <!-- Predicted Text -->
+                    <div class="col-md-6 mb-4 reveal">
+                        <h3 class="h5">Predicted Text</h3>
+                        <div id="predictedText" class="p-3 border rounded"></div>
+                        <div id="confidenceContainer" class="mt-2 d-none">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">Model Confidence:</div>
+                                <div class="progress flex-grow-1" style="height: 10px;">
+                                    <div id="confidenceBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div id="confidencePercentage" class="ms-2 badge bg-secondary">0%</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Character Confidence Bars -->
+                        <div id="characterConfidenceContainer" class="mt-3 d-none">
+                            <h5 class="h6 mb-2">Character Confidence</h5>
+                            <div id="characterConfidenceList" class="character-confidence-list">
+                                <!-- Character confidence bars will be populated dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="text-muted small mt-2">
+                            <i class="fas fa-info-circle me-1"></i>
+                            This shows what our model thinks was typed based on the audio alone
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Keyboard Visualization -->
+                <div class="row mt-4">
+                    <div class="col-12 reveal">
+                        <div class="section bg-dark p-4 rounded">
+                            <h3 class="h5 text-center mb-3">Detected Keystrokes Visualization</h3>
+                            <div id="keyboardVisualization" class="text-center">
+                                <!-- Keyboard visualization will be added here dynamically -->
+                            </div>
+                            <div class="text-muted small text-center mt-3">
+                                <i class="fas fa-keyboard me-1"></i>
+                                The highlighted keys show what our model detected from the audio recording
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Form -->
+                <div id="feedbackSection" class="row mt-3 d-none">
+                    <div class="col-12 reveal">
+                        <h3 class="h5">Provide Feedback</h3>
+                        <p class="small text-muted">Your feedback helps us improve our acoustic model</p>
+                        
+                        <form id="feedbackForm" class="bg-light p-3 rounded animate__animated animate__fadeIn">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="correctText" class="form-label">What was actually typed?</label>
+                                    <textarea id="correctText" class="form-control" rows="2" placeholder="Enter the text you actually typed"></textarea>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">How accurate was the prediction?</label>
+                                    <div class="d-flex">
+                                        <div class="rating-container">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="accuracyRating" id="rating1" value="1">
+                                                <label class="form-check-label" for="rating1">1</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="accuracyRating" id="rating2" value="2">
+                                                <label class="form-check-label" for="rating2">2</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="accuracyRating" id="rating3" value="3">
+                                                <label class="form-check-label" for="rating3">3</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="accuracyRating" id="rating4" value="4">
+                                                <label class="form-check-label" for="rating4">4</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="accuracyRating" id="rating5" value="5">
+                                                <label class="form-check-label" for="rating5">5</label>
+                                            </div>
+                                        </div>
+                                        <span class="ms-2 text-muted small">1=Poor, 5=Excellent</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="feedbackComments" class="form-label">Additional Comments</label>
+                                <textarea id="feedbackComments" class="form-control" rows="2" placeholder="Any other comments about the analysis?"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary animate__animated animate__pulse">Submit Feedback</button>
+                        </form>
+                        
+                        <div id="feedbackSuccess" class="alert alert-success mt-3 d-none animate__animated animate__fadeIn">
+                            Thank you for your feedback! Your input helps improve our acoustic models.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

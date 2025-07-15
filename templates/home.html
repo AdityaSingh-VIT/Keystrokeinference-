@@ -1,0 +1,120 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="page-transition">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section animate__animated animate__fadeIn" style="background-color: var(--subtle-purple);">
+                <h1 class="display-4">Keyboard Acoustic Side-Channel Attack</h1>
+                <p class="lead">This application demonstrates how the sound of typing can be analyzed to predict what was typed, posing a significant privacy risk.</p>
+                <hr class="my-4">
+                <p>
+                    Upload a recording of keyboard typing or record audio in real-time, and the system will attempt to
+                    determine what text was typed based on acoustic analysis.
+                </p>
+                <div class="mt-4">
+                    <a href="/detect" class="btn btn-primary me-2 animate__animated animate__pulse animate__repeat-2">
+                        <i class="fas fa-magic me-2"></i>
+                        Detect Text from Audio
+                    </a>
+                    <a href="/analyze" class="btn btn-outline-primary me-2 animate__animated animate__fadeIn">
+                        <i class="fas fa-microphone me-2"></i>
+                        Analyze Audio
+                    </a>
+                    <a href="/train" class="btn btn-outline-secondary me-2 animate__animated animate__fadeIn animate__delay-1s">
+                        <i class="fas fa-brain me-2"></i>
+                        Train Model
+                    </a>
+                    <a href="/about" class="btn btn-outline-secondary animate__animated animate__fadeIn animate__delay-2s">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section">
+                <h2 class="section-header">How It Works</h2>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-1s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-file-audio me-2 text-primary"></i>
+                                    Audio Processing
+                                </h5>
+                                <p class="card-text">
+                                    Audio is captured and processed using signal processing techniques.
+                                    Spectrograms are generated to visualize the frequency content of keyboard sounds.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-2s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-network-wired me-2 text-primary"></i>
+                                    CNN Feature Extraction
+                                </h5>
+                                <p class="card-text">
+                                    A Convolutional Neural Network analyzes the audio spectrograms to extract
+                                    relevant features that distinguish between different keystrokes.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-3s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-project-diagram me-2 text-primary"></i>
+                                    HMM Sequence Prediction
+                                </h5>
+                                <p class="card-text">
+                                    A Hidden Markov Model uses the extracted features to predict the
+                                    most likely sequence of keystrokes, ultimately reconstructing the typed text.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Implications Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section reveal">
+                <h2 class="section-header">Security Implications</h2>
+                
+                <div class="alert alert-warning animate__animated animate__fadeIn animate__delay-3s">
+                    <h4 class="alert-heading">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Privacy Concerns
+                    </h4>
+                    <p>
+                        This demonstration highlights a serious side-channel attack vector. 
+                        An attacker with access to audio recordings of keyboard typing (e.g., from video calls, 
+                        surveillance, or compromised microphones) could potentially recover sensitive information
+                        like passwords, messages, or confidential documents.
+                    </p>
+                    <hr>
+                    <p class="mb-0">
+                        <strong>Mitigations:</strong> Use keyboard dampening pads, white noise generators, or
+                        specialized "silent" keyboards to reduce the effectiveness of these attacks.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="jumbotron bg-dark p-4 rounded shadow">
+            <h1 class="display-4">Keyboard Acoustic Side-Channel Attack</h1>
+            <p class="lead">This application demonstrates how the sound of typing can be analyzed to predict what was typed, posing a significant privacy risk.</p>
+            <hr class="my-4">
+            <p>
+                Upload a recording of keyboard typing or record audio in real-time, and the system will attempt to
+                determine what text was typed based on acoustic analysis.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Upload and Record Section -->
+    <div class="col-md-6 mb-4">
+        <div class="section">
+            <h2 class="section-header">Audio Analysis</h2>
+            
+            <!-- Upload Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-upload me-2"></i>
+                        Upload Recording
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="uploadForm">
+                        <div class="mb-3">
+                            <label for="audioFile" class="form-label">Select audio file of keyboard typing</label>
+                            <input class="form-control" type="file" id="audioFile" accept=".wav,.mp3,.ogg,.m4a">
+                            <div class="form-text text-muted">
+                                Supported formats: WAV, MP3, OGG, M4A
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-play me-2"></i>
+                            Analyze Recording
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Record Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-microphone me-2"></i>
+                        Record in Real-Time
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p>Record keyboard typing in real-time for immediate analysis.</p>
+                    <button id="recordButton" class="btn btn-primary">
+                        <i class="fas fa-microphone me-2"></i>
+                        Start Recording
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Training Section -->
+    <div class="col-md-6 mb-4">
+        <div class="section">
+            <h2 class="section-header">Model Training</h2>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-brain me-2"></i>
+                        Train the Model
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form id="trainForm">
+                        <div class="mb-3">
+                            <label for="trainingFiles" class="form-label">Select audio files for training</label>
+                            <input class="form-control" type="file" id="trainingFiles" accept=".wav,.mp3,.ogg,.m4a" multiple>
+                            <div class="form-text text-muted">
+                                You can select multiple files for bulk training
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="groundTruth" class="form-label">Ground truth text</label>
+                            <textarea class="form-control" id="groundTruth" rows="3" placeholder="Enter the exact text that was typed in the recording(s)..."></textarea>
+                            <div class="form-text text-muted">
+                                This helps the model learn the correlation between sounds and keystrokes
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-cogs me-2"></i>
+                                Train Model
+                            </button>
+                            <button type="button" id="resetTraining" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i>
+                                Reset Training Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Section -->
+<div id="results" class="row mt-4 d-none">
+    <div class="col-12">
+        <div class="section">
+            <h2 class="section-header">Analysis Results</h2>
+            
+            <div class="row">
+                <!-- Spectrogram -->
+                <div class="col-md-6 mb-4">
+                    <h3 class="h5">Spectrogram</h3>
+                    <canvas id="spectrogram" class="w-100"></canvas>
+                </div>
+                
+                <!-- Predicted Text -->
+                <div class="col-md-6 mb-4">
+                    <h3 class="h5">Predicted Text</h3>
+                    <div id="predictedText" class="p-3 border rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="section">
+            <h2 class="section-header">How It Works</h2>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-file-audio me-2"></i>
+                                Audio Processing
+                            </h5>
+                            <p class="card-text">
+                                Audio is captured and processed using signal processing techniques.
+                                Spectrograms are generated to visualize the frequency content of keyboard sounds.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-network-wired me-2"></i>
+                                CNN Feature Extraction
+                            </h5>
+                            <p class="card-text">
+                                A Convolutional Neural Network analyzes the audio spectrograms to extract
+                                relevant features that distinguish between different keystrokes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-project-diagram me-2"></i>
+                                HMM Sequence Prediction
+                            </h5>
+                            <p class="card-text">
+                                A Hidden Markov Model uses the extracted features to predict the
+                                most likely sequence of keystrokes, ultimately reconstructing the typed text.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Implications Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="section">
+            <h2 class="section-header">Security Implications</h2>
+            
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Privacy Concerns
+                </h4>
+                <p>
+                    This demonstration highlights a serious side-channel attack vector. 
+                    An attacker with access to audio recordings of keyboard typing (e.g., from video calls, 
+                    surveillance, or compromised microphones) could potentially recover sensitive information
+                    like passwords, messages, or confidential documents.
+                </p>
+                <hr>
+                <p class="mb-0">
+                    <strong>Mitigations:</strong> Use keyboard dampening pads, white noise generators, or
+                    specialized "silent" keyboards to reduce the effectiveness of these attacks.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

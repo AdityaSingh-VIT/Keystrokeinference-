@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="page-transition">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section animate__animated animate__fadeIn" style="background-color: var(--subtle-teal);">
+                <h1 class="section-header">About This Project</h1>
+                <p>Learn more about keyboard acoustic side-channel attacks and how they work.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="section reveal">
+                <h2 class="section-header">What are Side-Channel Attacks?</h2>
+                
+                <p>
+                    Side-channel attacks extract information from the physical implementation of a system
+                    rather than finding weaknesses in the algorithms themselves. These attacks analyze
+                    information gained from the physical operation of systems, such as:
+                </p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-1s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-volume-up me-2 text-primary"></i>
+                                    Acoustic Emissions
+                                </h5>
+                                <p class="card-text">
+                                    Sound produced by keyboards, printers, or computer components during operation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-2s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-bolt me-2 text-primary"></i>
+                                    Power Consumption
+                                </h5>
+                                <p class="card-text">
+                                    Variations in energy use that can reveal operations being performed.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-3s">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-clock me-2 text-primary"></i>
+                                    Timing Information
+                                </h5>
+                                <p class="card-text">
+                                    Differences in how long operations take to complete.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Acoustic Attacks -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section reveal">
+                <h2 class="section-header">Keyboard Acoustic Attacks</h2>
+                
+                <p>
+                    This application demonstrates a specific type of side-channel attack that exploits the sounds
+                    produced when typing on a keyboard. Each key on a keyboard produces a slightly different sound
+                    when pressed, due to:
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-group my-3 animate__animated animate__fadeInLeft animate__delay-1s">
+                            <li class="list-group-item">Physical position on the keyboard</li>
+                            <li class="list-group-item">Differences in key mechanism and construction</li>
+                            <li class="list-group-item">Variations in typing force and style</li>
+                            <li class="list-group-item">Resonance patterns of the keyboard and surrounding materials</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="alert alert-primary h-100 d-flex align-items-center animate__animated animate__fadeInRight animate__delay-1s">
+                            <div>
+                                <p class="mb-0">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    By recording these sounds and analyzing them with machine learning techniques,
+                                    it's possible to reconstruct what was typed, even without visual access to the keyboard.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Implementation -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section reveal">
+                <h2 class="section-header">Technical Implementation</h2>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-1s">
+                            <div class="card-header">Audio Processing</div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>High-pass filtering</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Spectrogram generation</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Audio segmentation</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Feature extraction</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-2s">
+                            <div class="card-header">CNN Model</div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Pattern recognition</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Audio feature learning</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Keystroke identification</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Temporal analysis</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 animate__animated animate__fadeInUp animate__delay-3s">
+                            <div class="card-header">HMM Model</div>
+                            <div class="card-body">
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Sequence modeling</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Language patterns</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>State transition learning</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Probability maximization</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- References -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section reveal">
+                <h2 class="section-header">References & Further Reading</h2>
+                
+                <ul class="list-group animate__animated animate__fadeIn animate__delay-3s">
+                    <li class="list-group-item">
+                        <i class="fas fa-book me-2 text-primary"></i>
+                        Asonov, D., & Agrawal, R. (2004). "Keyboard acoustic emanations."
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-book me-2 text-primary"></i>
+                        Zhuang, L., Zhou, F., & Tygar, J. D. (2009). "Keyboard acoustic emanations revisited."
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-book me-2 text-primary"></i>
+                        Halevi, T., & Saxena, N. (2012). "A closer look at keyboard acoustic emanations: random passwords, typing styles and decoding techniques."
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

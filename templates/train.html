@@ -1,0 +1,211 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="page-transition">
+    <!-- Training Progress Modal -->
+    <div class="modal fade" id="trainingProgressModal" tabindex="-1" aria-labelledby="trainingProgressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="trainingProgressModalLabel">Training Progress</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+    <!-- Status Container -->
+    <div id="status" class="mb-4"></div>
+                    <div class="mb-3">
+                        <div class="progress" style="height: 25px;">
+                            <div id="trainingProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                    </div>
+                    <p id="trainingProgressStatus">Initializing training...</p>
+                    <div id="trainingProgressDetails">
+                        <span class="badge bg-primary mb-2">Files processed: <span id="filesProcessed">0</span>/<span id="totalFiles">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section" style="background-color: var(--subtle-pink);">
+                <h1 class="section-header">Model Training</h1>
+                <p>Train the system by providing labeled keyboard typing recordings to improve prediction accuracy.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="section">
+                <h2 class="section-header">
+                    <i class="fas fa-brain me-2"></i>
+                    Train with Audio Samples
+                </h2>
+                
+                <div class="nav nav-tabs mb-4" id="trainTabOptions" role="tablist">
+                    <button class="nav-link active" id="standard-tab" data-bs-toggle="tab" data-bs-target="#standard-training" type="button" role="tab" aria-controls="standard-training" aria-selected="true">
+                        <i class="fas fa-file-audio me-2"></i>Standard Training
+                    </button>
+                    <button class="nav-link" id="bulk-tab" data-bs-toggle="tab" data-bs-target="#bulk-training" type="button" role="tab" aria-controls="bulk-training" aria-selected="false">
+                        <i class="fas fa-upload me-2"></i>Bulk Upload with Filenames
+                    </button>
+                </div>
+                
+                <div class="tab-content" id="trainTabContent">
+                    <!-- Standard Training -->
+                    <div class="tab-pane fade show active" id="standard-training" role="tabpanel" aria-labelledby="standard-tab">
+                        <form id="trainingForm" class="animate__animated animate__fadeIn">
+                            <div class="mb-4">
+                                <label for="trainingFiles" class="form-label">Select audio files of keyboard typing</label>
+                                <input class="form-control" type="file" id="trainingFiles" multiple accept=".wav,.mp3,.ogg,.m4a">
+                                <div class="form-text text-muted">
+                                    You can select multiple files for batch training.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="groundTruth" class="form-label">Ground Truth Text</label>
+                                <textarea class="form-control" id="groundTruth" rows="4" placeholder="Enter the exact text that was typed in the recordings"></textarea>
+                                <div class="form-text text-muted">
+                                    Enter the exact text that was typed in the recordings. This will be used as training labels.
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary animate__animated animate__pulse animate__repeat-2">
+                                    <i class="fas fa-play me-2"></i>
+                                    Train Model
+                                </button>
+                                
+                                <button type="button" id="resetTrainingButton" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt me-2"></i>
+                                    Reset Training Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Bulk Upload Training -->
+                    <div class="tab-pane fade" id="bulk-training" role="tabpanel" aria-labelledby="bulk-tab">
+                        <form id="bulkTrainingForm" class="animate__animated animate__fadeIn" method="POST" action="/bulk_train" enctype="multipart/form-data">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Filename as Text:</strong> Upload multiple audio files where each filename (without extension) will be used as the ground truth text for training.
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="bulkTrainingFiles" class="form-label">Select multiple audio files</label>
+                                <input class="form-control" type="file" id="bulkTrainingFiles" name="files" multiple accept=".wav,.mp3,.ogg,.m4a">
+                                <div class="form-text text-muted">
+                                    Example: If filename is "hello_world.wav", the text "hello_world" will be used as the training label.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="convertUnderscores" name="convert_underscores" value="true" checked>
+                                    <label class="form-check-label" for="convertUnderscores">
+                                        Convert underscores to spaces (e.g., "hello_world" → "hello world")
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="convertHyphens" name="convert_hyphens" value="true" checked>
+                                    <label class="form-check-label" for="convertHyphens">
+                                        Convert hyphens to spaces (e.g., "hello-world" → "hello world")
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div id="filePreview" class="mb-4 d-none">
+                                <h6>Files to be processed:</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Filename</th>
+                                                <th>Ground Truth Text</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="filePreviewList">
+                                            <!-- Preview will be populated dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary animate__animated animate__pulse animate__repeat-2">
+                                    <i class="fas fa-upload me-2"></i>
+                                    Train with Bulk Files
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Tips -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="section">
+                <h2 class="section-header">Training Tips</h2>
+                
+                <div class="card mb-3 animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Quality Recordings
+                        </h5>
+                        <p class="card-text">
+                            Ensure your recordings have minimal background noise and the keyboard is clearly audible.
+                            Position the microphone consistently for all training recordings.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card mb-3 animate__animated animate__fadeInUp animate__delay-2s">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Diverse Text Samples
+                        </h5>
+                        <p class="card-text">
+                            Include a variety of different words, phrases, and characters in your training data.
+                            Make sure to cover common letter combinations and typing patterns.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="card mb-3 animate__animated animate__fadeInUp animate__delay-3s">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-lightbulb me-2 text-warning"></i>
+                            Consistent Typing Style
+                        </h5>
+                        <p class="card-text">
+                            Try to maintain a consistent typing style during both training and testing.
+                            Significant changes in typing force or speed may affect results.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Status -->
+    <div id="trainingStatus" class="row mt-4 d-none">
+        <div class="col-12">
+            <div class="section" style="background-color: var(--subtle-teal);">
+                <h2 class="section-header">Training Status</h2>
+                <div id="trainingProgress" class="alert alert-info">
+                    <i class="fas fa-spinner fa-spin me-2"></i>
+                    <span id="trainingMessage">Training in progress...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

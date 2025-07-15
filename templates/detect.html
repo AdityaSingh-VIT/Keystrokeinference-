@@ -1,0 +1,423 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <!-- Analysis Progress Modal -->
+    <div class="modal fade" id="analysisProgressModal" tabindex="-1" aria-labelledby="analysisProgressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="analysisProgressModalLabel">Analysis Progress</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="progress mb-3">
+                        <div id="analysisProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    <p id="analysisProgressStatus">Initializing analysis...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="page-transition">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section" style="background-color: var(--subtle-green);">
+                <h1 class="section-header">Keyboard Audio Detection</h1>
+                <p>Upload a keyboard typing recording and see what text was typed based on acoustic analysis.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Upload Section -->
+        <div class="col-md-6 mb-4 mx-auto">
+            <div class="section animate__animated animate__fadeInUp">
+                <h2 class="section-header">
+                    <i class="fas fa-file-audio me-2"></i>
+                    Upload Keyboard Recording
+                </h2>
+                <form id="uploadForm">
+                    <div class="mb-3">
+                        <label for="audioFile" class="form-label">Select audio file of keyboard typing</label>
+                        <input class="form-control form-control-lg" type="file" id="audioFile" name="file" accept=".wav,.mp3,.ogg,.m4a">
+                        <div class="form-text text-muted">
+                            Supported formats: WAV, MP3, OGG, M4A. For best results, use high-quality recordings.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 animate__animated animate__pulse animate__repeat-2">
+                        <i class="fas fa-magic me-2"></i>
+                        Detect Text from Audio
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="row mt-4 d-none">
+        <div class="col-12">
+            <div class="section animate__animated animate__fadeInUp" style="background-color: var(--subtle-teal);">
+                <h2 class="section-header">Detection Results</h2>
+                
+                <!-- Predicted Text -->
+                <div class="row mb-4">
+                    <div class="col-12 reveal">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="h5 mb-0">
+                                    <i class="fas fa-keyboard me-2"></i>
+                                    Detected Text
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="predictedText" class="p-4 bg-light rounded mb-3 border-start border-primary border-5 display-6 lh-base"></div>
+                                <div id="confidenceContainer" class="mt-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-2 fw-bold">Detection Confidence:</div>
+                                        <div class="progress flex-grow-1" style="height: 10px;">
+                                            <div id="confidenceBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <div id="confidencePercentage" class="ms-2 badge bg-secondary">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- Spectrogram -->
+                    <div class="col-md-6 mb-4 reveal">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-info text-white">
+                                <h3 class="h5 mb-0">
+                                    <i class="fas fa-wave-square me-2"></i>
+                                    Audio Spectrogram
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="spectrogram-container">
+                                    <canvas id="spectrogram" class="w-100"></canvas>
+                                </div>
+                                <div class="text-muted small mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    The spectrogram shows frequency patterns of your keystrokes over time
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Character Confidence -->
+                    <div class="col-md-6 mb-4 reveal">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-success text-white">
+                                <h3 class="h5 mb-0">
+                                    <i class="fas fa-chart-bar me-2"></i>
+                                    Character Confidence
+                                </h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="characterConfidenceContainer">
+                                    <div id="characterConfidenceList" class="character-confidence-list">
+                                        <!-- Character confidence bars will be populated dynamically -->
+                                    </div>
+                                </div>
+                                <div class="text-muted small mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Confidence level for each detected character
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Keyboard Visualization -->
+                <div class="row mt-2">
+                    <div class="col-12 reveal">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-dark text-white">
+                                <h3 class="h5 mb-0 text-center">
+                                    <i class="fas fa-keyboard me-2"></i>
+                                    Detected Keystrokes Visualization
+                                </h3>
+                            </div>
+                            <div class="card-body bg-dark text-white p-4">
+                                <div id="keyboardVisualization" class="text-center">
+                                    <!-- Keyboard visualization will be added here dynamically -->
+                                </div>
+                                <div class="text-muted small text-center mt-3">
+                                    <i class="fas fa-keyboard me-1"></i>
+                                    Highlighted keys show what our model detected from the audio recording
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Try Again -->
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button id="tryAgainBtn" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-redo-alt me-2"></i>
+                            Try Another Recording
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get modal elements
+    let analysisProgressModal;
+    const analysisProgressModalElement = document.getElementById('analysisProgressModal');
+    if (analysisProgressModalElement) {
+        analysisProgressModal = new bootstrap.Modal(analysisProgressModalElement, {
+            backdrop: 'static',
+            keyboard: false
+        });
+    }
+    const analysisProgressBar = document.getElementById('analysisProgressBar');
+    const analysisProgressStatus = document.getElementById('analysisProgressStatus');
+    const resultsSection = document.getElementById('results');
+    
+    // Handle file upload form submission
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Check if file is selected
+            const audioFile = document.getElementById('audioFile');
+            if (!audioFile.files || audioFile.files.length === 0) {
+                alert('Please select an audio file first');
+                return;
+            }
+
+            // Show progress modal
+            if (analysisProgressBar) {
+                analysisProgressBar.style.width = '0%';
+                analysisProgressBar.setAttribute('aria-valuenow', 0);
+                analysisProgressBar.textContent = '0%';
+            }
+
+            if (analysisProgressStatus) {
+                analysisProgressStatus.textContent = 'Preparing file for upload...';
+            }
+
+            if (analysisProgressModal) analysisProgressModal.show();
+
+            // Update progress
+            let currentStep = 0;
+            const steps = ['Uploading file...', 'Processing audio...', 'Generating spectrogram...', 'Analyzing patterns...', 'Predicting text...'];
+
+            // Function to update the progress bar
+            const updateProgress = () => {
+                currentStep++;
+                const percentage = Math.min(Math.round((currentStep / steps.length) * 100), 100);
+
+                if (analysisProgressBar) {
+                    analysisProgressBar.style.width = `${percentage}%`;
+                    analysisProgressBar.setAttribute('aria-valuenow', percentage);
+                    analysisProgressBar.textContent = `${percentage}%`;
+                }
+
+                if (analysisProgressStatus && currentStep <= steps.length) {
+                    analysisProgressStatus.textContent = steps[currentStep - 1];
+                }
+            };
+
+            // Start progress updates
+            updateProgress(); // First step
+
+            // Set up timer to simulate progress steps
+            const progressTimer = setInterval(() => {
+                if (currentStep < steps.length) {
+                    updateProgress();
+                } else {
+                    clearInterval(progressTimer);
+                }
+            }, 1500);
+
+            const formData = new FormData(uploadForm);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear progress timer and hide modal
+                clearInterval(progressTimer);
+                if (analysisProgressModal) analysisProgressModal.hide();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Display results
+                if (resultsSection) {
+                    resultsSection.classList.remove('d-none');
+
+                    // Display predicted text
+                    const predictedTextElement = document.getElementById('predictedText');
+                    if (predictedTextElement) {
+                        if (data.predicted_text && data.predicted_text !== "Models not trained yet. Please train models first.") {
+                            predictedTextElement.textContent = data.predicted_text;
+                            predictedTextElement.classList.add('border-primary');
+                            
+                            // Add keyboard visualization
+                            const keyboardVisualization = document.getElementById('keyboardVisualization');
+                            if (keyboardVisualization && window.createKeyboardVisualization) {
+                                // Make sure the keyboard visualization container is visible
+                                document.querySelector('.card-body.bg-dark').style.display = 'block';
+                                window.createKeyboardVisualization('keyboardVisualization', data.predicted_text);
+                            }
+                        } else {
+                            predictedTextElement.textContent = "No text detected. The audio may not contain keyboard typing.";
+                            predictedTextElement.classList.add('border-warning');
+                            
+                            // Hide keyboard visualization if no text
+                            const keyboardCard = document.querySelector('.card-body.bg-dark');
+                            if (keyboardCard) {
+                                keyboardCard.style.display = 'none';
+                            }
+                        }
+                    }
+
+                    // Display confidence
+                    const confidencePercentage = document.getElementById('confidencePercentage');
+                    const confidenceBar = document.getElementById('confidenceBar');
+                    if (confidencePercentage && confidenceBar) {
+                        confidencePercentage.textContent = `${data.accuracy_percentage}%`;
+                        confidenceBar.style.width = `${data.accuracy_percentage}%`;
+                        
+                        // Set color based on confidence
+                        confidenceBar.classList.remove('bg-success', 'bg-warning', 'bg-danger');
+                        if (data.accuracy_percentage >= 80) {
+                            confidenceBar.classList.add('bg-success');
+                        } else if (data.accuracy_percentage >= 50) {
+                            confidenceBar.classList.add('bg-warning');
+                        } else {
+                            confidenceBar.classList.add('bg-danger');
+                        }
+                    }
+                    
+                    // Display spectrogram
+                    if (data.spectrogram) {
+                        const spectrogramCanvas = document.getElementById('spectrogram');
+                        if (spectrogramCanvas) {
+                            const ctx = spectrogramCanvas.getContext('2d');
+                            const img = new Image();
+                            img.onload = function() {
+                                spectrogramCanvas.width = img.width;
+                                spectrogramCanvas.height = img.height;
+                                ctx.drawImage(img, 0, 0);
+                            };
+                            img.src = 'data:image/png;base64,' + data.spectrogram;
+                        }
+                    }
+                    
+                    // Display character confidence
+                    const characterConfidenceList = document.getElementById('characterConfidenceList');
+                    const characterConfidenceContainer = document.querySelector('.card-header.bg-success').closest('.card');
+                    
+                    if (characterConfidenceList && data.confidence_scores && data.confidence_scores.length > 0 && 
+                        data.predicted_text && data.predicted_text !== "Models not trained yet. Please train models first.") {
+                        
+                        if (characterConfidenceContainer) {
+                            characterConfidenceContainer.style.display = 'block';
+                        }
+                        
+                        characterConfidenceList.innerHTML = '';
+                        
+                        for (let i = 0; i < data.predicted_text.length; i++) {
+                            const char = data.predicted_text[i];
+                            const confidence = data.confidence_scores[i] * 100;
+                            
+                            const charDiv = document.createElement('div');
+                            charDiv.className = 'char-confidence-item';
+                            
+                            let colorClass = 'bg-danger';
+                            if (confidence >= 80) {
+                                colorClass = 'bg-success';
+                            } else if (confidence >= 50) {
+                                colorClass = 'bg-warning';
+                            }
+                            
+                            charDiv.innerHTML = `
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="char-display me-2">${char}</div>
+                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                        <div class="progress-bar ${colorClass}" role="progressbar" 
+                                             style="width: ${confidence}%" aria-valuenow="${confidence}" 
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <div class="confidence-value ms-2">${confidence.toFixed(1)}%</div>
+                                </div>
+                            `;
+                            
+                            characterConfidenceList.appendChild(charDiv);
+                        }
+                    } else {
+                        // Hide character confidence card if no valid text detected
+                        if (characterConfidenceContainer) {
+                            characterConfidenceContainer.style.display = 'none';
+                        }
+                    }
+                    
+                    // Scroll to results
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+                if (analysisProgressModal) analysisProgressModal.hide();
+            });
+        });
+    }
+    
+    // Try again button
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+    if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', function() {
+            if (resultsSection) {
+                resultsSection.classList.add('d-none');
+            }
+            if (uploadForm) {
+                uploadForm.reset();
+                uploadForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+});
+</script>
+<style>
+.char-display {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #343a40;
+    color: white;
+    border-radius: 4px;
+}
+
+.confidence-value {
+    font-weight: bold;
+    width: 60px;
+    text-align: right;
+}
+
+.character-confidence-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
